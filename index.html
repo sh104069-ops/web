@@ -143,7 +143,7 @@
         <p class="lead">ドメイン名をIPアドレスへ変換する。</p>
       </div>
     </div>
-    <p class="mission"><b>ミッション</b>ドメイン名をIPアドレスに変換する「名前解決」を、①→②→③の順に実行しよう。</p>
+    <p class="mission"><b>ミッション</b>「名前解決」を①→②→③の順に実行して、そのあとDNSサーバー役にもなってみよう。</p>
 
     <div class="panel">
       <h3>なぜ変換が必要なの？</h3>
@@ -194,8 +194,9 @@
     </div>
 
     <div class="panel">
-      <h3>確認クイズ</h3>
-      <div class="quiz" id="quiz-dns"></div>
+      <h3>体験：DNSサーバーになってみよう</h3>
+      <p class="instr">今度はあなたがDNSサーバーの役です。届いた問い合わせのドメイン名を台帳から探して、応答しよう。</p>
+      <div class="lookup" id="lk-dns"></div>
     </div>
 
     <div class="done-banner" id="done-2" hidden><span>ステップ2 クリア！</span><button type="button" class="btn primary" data-go="3">ステップ3へ</button></div>
@@ -211,7 +212,7 @@
         <p class="lead">TCP/IPとルーターで、データをサーバーまで運ぶ。</p>
       </div>
     </div>
-    <p class="mission"><b>ミッション</b>データをパケットに分けて送り、サーバーで元通りにしよう。ルーターを故障させても届くかな？</p>
+    <p class="mission"><b>ミッション</b>パケットを送り、ルーターとTCPの役もやってみよう。ルーターを故障させても届くかな？</p>
 
     <div class="panel">
       <h3>ポイント</h3>
@@ -247,8 +248,22 @@
     </div>
 
     <div class="panel">
-      <h3>確認クイズ</h3>
-      <div class="quiz" id="quiz-packet"></div>
+      <h3>体験：ルーターになってみよう</h3>
+      <p class="instr">今度はあなたがルーターの役です。届いたパケットの宛先IPアドレスを見て、転送先を選ぼう（ルーティング）。</p>
+      <div class="lookup" id="lk-router"></div>
+    </div>
+
+    <div class="panel">
+      <h3>体験：TCPになってみよう</h3>
+      <p class="instr">サーバーに届いたパケットが、順番バラバラです。番号どおりの場所に並べ直して、元のメッセージにしよう。届いていない番号があるときは、再送を要求します。</p>
+      <div class="pool" id="tcp-pool" aria-label="届いたパケット"></div>
+      <div class="slots tcp-slots" id="tcp-slots"></div>
+      <div class="actions">
+        <button type="button" class="btn ghost" id="tcp-resend">届いていないパケットの再送を要求する</button>
+        <button type="button" class="btn primary" id="tcp-check" disabled>こたえあわせ</button>
+        <button type="button" class="btn ghost" id="tcp-reset">やり直す</button>
+      </div>
+      <div class="feedback" id="tcp-feedback" role="status"></div>
     </div>
 
     <div class="done-banner" id="done-3" hidden><span>ステップ3 クリア！</span><button type="button" class="btn primary" data-go="4">ステップ4へ</button></div>
@@ -264,7 +279,7 @@
         <p class="lead">クライアント・サーバーモデル。</p>
       </div>
     </div>
-    <p class="mission"><b>ミッション</b>リクエストを送って、サーバーから返ってくるレスポンスを確かめよう。</p>
+    <p class="mission"><b>ミッション</b>リクエストを自分で作って送り、サーバー役としてレスポンスも返してみよう。</p>
 
     <div class="panel">
       <h3>ポイント</h3>
@@ -318,8 +333,34 @@
     </div>
 
     <div class="panel">
-      <h3>確認クイズ</h3>
-      <div class="quiz" id="quiz-http"></div>
+      <h3>体験：リクエストを自分で組み立てよう</h3>
+      <p class="instr" id="rq-task"></p>
+      <div class="puzzle-meta"><span>問題 <b id="rq-num">1</b> / 2</span></div>
+      <div class="pool" id="rq-pool" aria-label="部品置き場"></div>
+      <div class="reqbuild" id="rq-build">
+        <div class="rq-line">
+          <div class="slot r-method" data-role="method"><div class="slot-label"><b>メソッド</b><span class="slot-hint">ほしい＝取ってくる</span></div><div class="slot-body"></div></div>
+          <div class="slot r-path" data-role="path"><div class="slot-label"><b>パス名</b><span class="slot-hint">どのファイルか</span></div><div class="slot-body"></div></div>
+          <span class="rq-fixed">HTTP/1.1</span>
+        </div>
+        <div class="rq-line">
+          <span class="rq-fixed">Host:</span>
+          <div class="slot r-host" data-role="host"><div class="slot-label"><b>ドメイン名</b><span class="slot-hint">どのサイトか</span></div><div class="slot-body"></div></div>
+        </div>
+      </div>
+      <div class="feedback" id="rq-feedback" role="status"></div>
+      <pre class="code rq-out" id="rq-out" hidden></pre>
+      <div class="actions">
+        <button type="button" class="btn primary" id="rq-check" disabled>こたえあわせ</button>
+        <button type="button" class="btn ghost" id="rq-reset">やり直す</button>
+        <button type="button" class="btn primary" id="rq-next" hidden>次の問題へ</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>体験：WEBサーバーになってみよう</h3>
+      <p class="instr">今度はあなたがWEBサーバーの役です。届いたリクエストのパス名を、サーバーの中から探して、レスポンスを返そう。</p>
+      <div class="lookup" id="lk-http"></div>
     </div>
 
     <div class="done-banner" id="done-4" hidden><span>ステップ4 クリア！</span><button type="button" class="btn primary" data-go="5">ステップ5へ</button></div>

@@ -261,6 +261,7 @@ code { font-size: .92em; background: #eef2fa; padding: .05em .4em; border-radius
   .slots { grid-template-columns: 1fr; }
   .panel { padding: 18px 16px; }
   .order-slots .slot { grid-template-columns: 1fr; }
+  .tcp-slots { grid-template-columns: repeat(2, 1fr); }
 }
 
 .feedback { margin-top: 14px; padding: 0; border-radius: 12px; font-weight: 700; }
@@ -371,18 +372,33 @@ code { font-size: .92em; background: #eef2fa; padding: .05em .4em; border-radius
 .code .c-ng { color: #ff8787; font-weight: 700; }
 .code .c-body { color: #b6c3e6; }
 
-/* ===== クイズ ===== */
-.q { margin-bottom: 18px; }
-.q-text { font-weight: 700; margin-bottom: 8px; }
-.q-opts { display: grid; gap: 8px; }
-.opt { text-align: left; min-height: 48px; padding: 8px 16px; background: #fff; border: 2px solid var(--line-strong); border-radius: 12px; font-weight: 700; }
-.opt:hover:not(:disabled) { border-color: var(--primary); background: #f5f7ff; }
-.opt.ok { background: var(--ok-bg); border-color: var(--ok); color: #1b5e2a; }
-.opt.ng { background: var(--ng-bg); border-color: var(--ng); color: #8f1f1f; opacity: .8; }
-.opt:disabled { cursor: default; }
-.q-exp { margin-top: 8px; padding: 8px 14px; border-radius: 10px; font-weight: 500; }
-.q-exp.ok { background: var(--ok-bg); color: #1b5e2a; }
-.q-exp.ng { background: var(--ng-bg); color: #8f1f1f; }
+/* ===== 「〜の役になってみよう」 ===== */
+.lk-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+.lk-top b { color: var(--ink); font-size: 18px; }
+.lk-ask { display: flex; align-items: center; gap: 14px; background: #f4f7fd; border-left: 6px solid var(--primary); border-radius: 4px 14px 14px 4px; padding: 12px 18px; font-weight: 700; }
+.lk-icon { font-size: 30px; line-height: 1; }
+.lk-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 16px; margin-top: 12px; }
+.lk-table th { text-align: left; font-family: var(--font); font-size: 13px; color: var(--muted); padding: 6px 14px; border-bottom: 2px solid var(--line-strong); }
+.lk-table td { padding: 12px 14px; border-bottom: 1px solid var(--line); transition: background .15s; }
+.lk-table tbody tr { cursor: pointer; }
+.lk-table tbody tr:hover td { background: #f5f7ff; }
+.lk-table tbody tr:focus-visible { outline: 3px solid var(--primary); outline-offset: -3px; }
+.lk-table tr.sel td { background: #fff4c9; font-weight: 800; }
+.lk-table tr.ng td { background: var(--ng-bg); color: var(--ng); font-weight: 800; }
+.lk-table tr.ok td { background: var(--ok-bg); color: #1b5e2a; font-weight: 800; }
+
+/* ===== TCP・リクエスト組み立て ===== */
+.chip.pkc { border-left: 8px solid var(--pc); }
+.chip.resent { animation: pop .45s ease; border-color: var(--ok); }
+.tcp-slots { margin-top: 0; }
+.feedback.info { background: #f4f7fd; border: 2px solid var(--line-strong); color: #26344f; }
+.reqbuild { display: grid; gap: 12px; background: var(--code); border-radius: 14px; padding: 16px; margin-bottom: 4px; }
+.rq-line { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.rq-line .slot { flex: 1 1 180px; }
+.rq-fixed { font-family: var(--mono); font-weight: 800; color: var(--code-ink); font-size: 17px; }
+.rq-out { margin-top: 12px; min-height: 0; }
+.r-method { --c: var(--primary); --cb: var(--primary-soft); }
+.r-host { --c: var(--domain); --cb: var(--domain-bg); }
 
 /* ===== レンダリング ===== */
 .render-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }

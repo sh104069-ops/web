@@ -1,6 +1,6 @@
 /* =========================================================
    WEBページが開くまで ─ 情報Ⅰ 情報通信ネットワーク
-   ※ 問題・クイズの内容は「データ」の部分（各 const）を書きかえるだけで変更できます。
+   ※ 問題や課題の内容は「データ」の部分（各 const）を書きかえるだけで変更できます。
    ========================================================= */
 (function () {
   'use strict';
@@ -88,45 +88,77 @@
       lines: ['各要素の位置と大きさを計算（例：見出し x:22 y:20）', '画面のピクセルに変換して出力', '→ 画面に表示！'] }
   ];
 
-  // クイズ（q：問題 / o：選択肢 / a：正解の番号(0から) / e：解説）
-  const QUIZ = {
-    dns: [
-      { q: '「example.com」のような名前を、「192.0.2.1」のような数字に変換するしくみはどれ？',
-        o: ['HTTP', 'DNS', 'パケット交換方式'], a: 1,
-        e: 'DNS（Domain Name System）が、ドメイン名をIPアドレスに変換します。これを「名前解決」といいます。' },
-      { q: '名前解決の正しい順番はどれ？',
-        o: ['① 応答 → ② 問い合わせ → ③ 検索・参照', '① 検索・参照 → ② 応答 → ③ 問い合わせ', '① 問い合わせ → ② 検索・参照 → ③ 応答'], a: 2,
-        e: 'PCが問い合わせ、DNSサーバーが台帳を検索・参照し、見つかったIPアドレスを応答します。' },
-      { q: '通信にはIPアドレスが必要なのに、私たちがドメイン名を使うのはなぜ？',
-        o: ['数字の羅列は、人間には覚えにくいから', 'ドメイン名のほうが通信が速いから', 'IPアドレスは使えなくなったから'], a: 0,
-        e: '人間が覚えやすい名前を使い、コンピュータが使う数字への変換はDNSにまかせています。' }
-    ],
-    packet: [
-      { q: 'データを小さな「パケット」に分けて、宛先や番号を付けて送る通信方式はどれ？',
-        o: ['1つの通信が回線を独占する方式', 'パケット交換方式', 'ドメイン名を数字にする方式'], a: 1,
-        e: 'パケット交換方式です。1本の回線を、たくさんの通信で分け合って使えます。' },
-      { q: 'パケットの宛先を見て、次にどこへ送るか選んで転送する機器はどれ？',
-        o: ['ルーター', 'ブラウザ', 'DNSサーバー'], a: 0,
-        e: 'ルーターが経路を選ぶ（ルーティング）ので、故障や混雑をよけて届けられます。' },
-      { q: 'パケットが順番バラバラに届いても、元のデータに戻せるのはなぜ？',
-        o: ['パケットがいつも同じ経路を通るから', 'ルーターが順番どおりにそろえて送るから', 'パケットに番号がついていて、TCPが並べ直すから'], a: 2,
-        e: '番号をもとに、受け取った側のTCPが並べ直します。届かないパケットは再送も求めます。' },
-      { q: 'TCP/IPのうち、「宛先のIPアドレスまでパケットを届ける（住所の役割）」を担うのはどっち？',
-        o: ['TCP', 'IP'], a: 1,
-        e: 'IPが宛先まで届け、TCPが順番の確認や再送で「確実に届ける」役割を担います。' }
-    ],
-    http: [
-      { q: '<code>GET /index.html HTTP/1.1</code> は、どちらのメッセージ？',
-        o: ['HTTPリクエスト（要求）', 'HTTPレスポンス（応答）'], a: 0,
-        e: 'クライアントがサーバーへ「このファイルをください」と要求するのがHTTPリクエストです。' },
-      { q: '<code>HTTP/1.1 404 Not Found</code> は、何を伝えている？',
-        o: ['成功したので、ページを返します', 'IPアドレスを調べています', '要求されたファイルがサーバーに見つかりません'], a: 2,
-        e: '404は「見つからない」という結果です。サーバーは、ファイルがないことも応答で知らせます。' },
-      { q: 'クライアント・サーバーモデルで、「クライアント」にあたるのはどれ？',
-        o: ['WEBサーバー', 'ルーター', 'WEBブラウザ（要求を出す側）'], a: 2,
-        e: '要求を出す側がクライアント、応じて提供する側がサーバーです。' }
-    ]
+  // ステップ2〜4：「〜の役になってみよう」（表を引いて応答する体験）
+  const LOOKUP = {
+    dns: {
+      unit: '問い合わせ', icon: '💻',
+      head: ['ドメイン名', 'IPアドレス'],
+      rows: DNS_RECORDS.map(r => ({ key: r.d, cells: [r.d, r.ip] })),
+      go: 'このIPアドレスで応答する', none: '「見つかりません」と応答する',
+      missWrong: 'その行は、問い合わせのドメイン名と違います。左の列を、1文字ずつ見比べてみよう。',
+      missNone: '問い合わせのドメイン名と、その行のドメイン名は同じですか？ 1文字ずつ見比べてみよう。',
+      missHas: '台帳をもう一度よく探してみよう。ちゃんと載っています。',
+      finish: 'DNSサーバーの仕事、完了！ 「検索・参照」して「応答」するのが、名前解決でした。',
+      rounds: [
+        { ask: 'PCからの問い合わせ：「<b>www.example.ac.jp</b> のIPアドレスを教えてください」', hit: 'www.example.ac.jp',
+          ok: '台帳で見つけて、<b>198.51.100.24</b> を応答しました。これが名前解決です。' },
+        { ask: 'PCからの問い合わせ：「<b>www.example.co.jp</b> のIPアドレスを教えてください」', hit: 'www.example.co.jp',
+          ok: '似た名前が並んでいても、ドメイン名が完全に一致する行を選べました。応答は <b>198.51.100.150</b> です。' },
+        { ask: 'PCからの問い合わせ：「<b>examp1e.com</b> のIPアドレスを教えてください」', hit: null,
+          ok: '台帳に「examp1e.com」はありません。「見つかりません」と応答しました。打ち間違いをすると、ブラウザには「サイトにアクセスできません」と出ます。' }
+      ]
+    },
+    router: {
+      unit: 'パケット', icon: '📦',
+      head: ['宛先IPアドレス', '転送先'],
+      rows: [
+        { key: 'A', cells: ['192.0.2.*', 'ルーターA'] },
+        { key: 'B', cells: ['198.51.100.*', 'ルーターB'] },
+        { key: 'C', cells: ['203.0.113.*', 'ルーターC'] }
+      ],
+      go: 'このルーターへ転送する', none: '',
+      missWrong: '宛先IPアドレスの、最初のほうの数字（例：203.0.113）が同じ行を探そう。',
+      missNone: '',
+      missHas: '',
+      finish: 'ルーターの仕事、完了！ 宛先を見て、次の送り先を選んで転送するのがルーティングです。',
+      rounds: [
+        { ask: 'パケットが届きました。宛先IPアドレスは <b>203.0.113.7</b> です。', hit: 'C',
+          ok: '「203.0.113.*」の行に一致するので、ルーターCへ転送しました。' },
+        { ask: 'パケットが届きました。宛先IPアドレスは <b>192.0.2.1</b> です。', hit: 'A',
+          ok: '「192.0.2.*」の行に一致するので、ルーターAへ転送しました。ステップ2で調べた example.com の宛先です。' },
+        { ask: 'パケットが届きました。宛先IPアドレスは <b>198.51.100.24</b> です。', hit: 'B',
+          ok: '「198.51.100.*」の行に一致するので、ルーターBへ転送しました。' }
+      ]
+    },
+    http: {
+      unit: 'リクエスト', icon: '💻',
+      head: ['サーバー内のファイル', '種類'],
+      rows: [
+        { key: '/index.html', cells: ['/index.html', 'HTML'] },
+        { key: '/about.html', cells: ['/about.html', 'HTML'] },
+        { key: '/photo.jpg', cells: ['/photo.jpg', '画像'] }
+      ],
+      go: 'このファイルを返す（200 OK）', none: 'ファイルがない（404 Not Found）を返す',
+      missWrong: '要求されたパス名と同じファイルを選ぼう。',
+      missNone: '要求されたファイルは、サーバーの中にありません。ないときは、どう応答する？',
+      missHas: 'そのファイルは、サーバーの中にあります。ファイルを選んで返そう。',
+      finish: 'WEBサーバーの仕事、完了！ ファイルがあれば「200 OK」、なければ「404 Not Found」を返します。',
+      rounds: [
+        { ask: 'ブラウザからのリクエスト：<code>GET /about.html HTTP/1.1</code>', hit: '/about.html',
+          ok: 'ファイルがあったので、「HTTP/1.1 <b>200 OK</b>」と、HTMLファイルの中身を返しました。' },
+        { ask: 'ブラウザからのリクエスト：<code>GET /photo.jpg HTTP/1.1</code>', hit: '/photo.jpg',
+          ok: '画像ファイルも同じです。「200 OK」と、画像のデータを返しました。' },
+        { ask: 'ブラウザからのリクエスト：<code>GET /menu.html HTTP/1.1</code>', hit: null,
+          ok: '/menu.html は、サーバーにありません。「HTTP/1.1 <b>404 Not Found</b>」を返しました。' }
+      ]
+    }
   };
+
+  // ステップ4：リクエスト組み立ての課題
+  const REQ_TASKS = [
+    { host: 'example.com', path: '/index.html' },
+    { host: 'www.example.ac.jp', path: '/club/kendo.html' }
+  ];
 
   /* =========================================================
      進み具合の保存・画面遷移
@@ -234,8 +266,8 @@
     }
   }
 
-  // 複数の条件（体験＋クイズ）がそろったらクリア
-  const parts = { 2: { sim: false, quiz: false }, 3: { sim: false, quiz: false }, 4: { sim: false, quiz: false } };
+  // 複数の体験がそろったらクリア
+  const parts = { 2: { sim: false, role: false }, 3: { sim: false, router: false, tcp: false }, 4: { sim: false, req: false, server: false } };
   function part(n, key) {
     if (!parts[n]) return;
     parts[n][key] = true;
@@ -339,44 +371,95 @@
   }
 
   /* =========================================================
-     共通部品：クイズ
+     共通部品：「〜の役になってみよう」（表を引いて応答する体験）
      ========================================================= */
-  function mountQuiz(root, items, onAllCorrect) {
-    root.innerHTML = '';
-    let correct = 0;
-    items.forEach((it, qi) => {
-      const q = el('div', 'q');
-      q.appendChild(el('p', 'q-text', '<b>Q' + (qi + 1) + '.</b> ' + it.q));
-      const opts = el('div', 'q-opts');
-      const exp = el('p', 'q-exp');
-      exp.hidden = true;
-      it.o.forEach((txt, oi) => {
-        const b = el('button', 'opt', txt);
-        b.type = 'button';
-        b.addEventListener('click', () => {
-          if (q.classList.contains('solved')) return;
-          exp.hidden = false;
-          if (oi === it.a) {
-            b.classList.add('ok');
-            q.classList.add('solved');
-            $$('.opt', opts).forEach(x => { x.disabled = true; });
-            exp.className = 'q-exp ok';
-            exp.innerHTML = '<b>正解！</b> ' + it.e;
-            correct++;
-            if (correct === items.length && onAllCorrect) onAllCorrect();
-          } else {
-            b.classList.add('ng');
-            b.disabled = true;
-            exp.className = 'q-exp ng';
-            exp.textContent = 'おしい！もう一度考えてみよう。';
-          }
-        });
-        opts.appendChild(b);
+  function mountLookup(root, cfg, onDone) {
+    const total = cfg.rounds.length;
+    const solved = new Set();
+    let idx = 0, sel = null, locked = false;
+    root.innerHTML =
+      '<div class="lk-top"><span>' + cfg.unit + ' <b class="lk-num">1</b> / ' + total + '</span><span class="dots lk-dots" aria-hidden="true"></span></div>' +
+      '<div class="lk-ask"><span class="lk-icon" aria-hidden="true">' + cfg.icon + '</span><span class="lk-text"></span></div>' +
+      '<div class="table-wrap"><table class="lk-table"><thead></thead><tbody></tbody></table></div>' +
+      '<div class="actions"><button type="button" class="btn primary lk-go" disabled></button>' +
+      '<button type="button" class="btn ghost lk-none"></button>' +
+      '<button type="button" class="btn primary lk-next" hidden>次へ</button></div>' +
+      '<div class="feedback lk-fb" role="status"></div>';
+    const numEl = $('.lk-num', root), dots = $('.lk-dots', root), askEl = $('.lk-text', root);
+    const thead = $('thead', root), tbody = $('tbody', root);
+    const goBtn = $('.lk-go', root), noneBtn = $('.lk-none', root), nextBtn = $('.lk-next', root), fb = $('.lk-fb', root);
+    thead.innerHTML = '<tr>' + cfg.head.map(h => '<th>' + esc(h) + '</th>').join('') + '</tr>';
+    goBtn.textContent = cfg.go;
+    noneBtn.textContent = cfg.none;
+
+    function renderDots() {
+      dots.innerHTML = '';
+      cfg.rounds.forEach((_, i) => dots.appendChild(el('span', 'dot' + (solved.has(i) ? ' solved' : '') + (i === idx ? ' now' : ''))));
+    }
+    function clearFb() { fb.className = 'feedback lk-fb'; fb.textContent = ''; }
+
+    function render() {
+      const r = cfg.rounds[idx];
+      sel = null; locked = false;
+      numEl.textContent = idx + 1;
+      askEl.innerHTML = r.ask;
+      tbody.innerHTML = '';
+      shuffle(cfg.rows).forEach(row => {
+        const tr = el('tr', '', row.cells.map(c => '<td>' + esc(c) + '</td>').join(''));
+        tr.tabIndex = 0;
+        tr.dataset.key = row.key;
+        const pick = () => {
+          if (locked) return;
+          $$('tr', tbody).forEach(x => x.classList.remove('sel', 'ng'));
+          tr.classList.add('sel');
+          sel = row.key;
+          goBtn.disabled = false;
+          clearFb();
+        };
+        tr.addEventListener('click', pick);
+        tr.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+        tbody.appendChild(tr);
       });
-      q.appendChild(opts);
-      q.appendChild(exp);
-      root.appendChild(q);
+      goBtn.hidden = false; goBtn.disabled = true;
+      noneBtn.hidden = !cfg.none;
+      nextBtn.hidden = true;
+      clearFb();
+      renderDots();
+    }
+
+    function success() {
+      const r = cfg.rounds[idx];
+      locked = true;
+      solved.add(idx);
+      $$('tr', tbody).forEach(tr => { tr.classList.remove('sel', 'ng'); tr.classList.toggle('ok', r.hit !== null && tr.dataset.key === r.hit); });
+      fb.className = 'feedback lk-fb ok';
+      fb.innerHTML = '正解！ ' + r.ok;
+      goBtn.hidden = true; noneBtn.hidden = true;
+      if (idx < total - 1) {
+        nextBtn.hidden = false;
+      } else {
+        fb.innerHTML += '<br>' + cfg.finish;
+        if (onDone) onDone();
+      }
+      renderDots();
+    }
+    function miss(text) {
+      fb.className = 'feedback lk-fb ng';
+      fb.textContent = text;
+    }
+
+    goBtn.addEventListener('click', () => {
+      const r = cfg.rounds[idx];
+      if (sel !== null && sel === r.hit) { success(); return; }
+      $$('tr', tbody).forEach(tr => { if (tr.dataset.key === sel) tr.classList.add('ng'); });
+      miss(r.hit === null ? cfg.missNone : cfg.missWrong);
     });
+    noneBtn.addEventListener('click', () => {
+      const r = cfg.rounds[idx];
+      if (r.hit === null) success(); else miss(cfg.missHas);
+    });
+    nextBtn.addEventListener('click', () => { idx++; render(); });
+    render();
   }
 
   /* =========================================================
@@ -872,6 +955,141 @@
     });
   }
 
+  /* ---- ステップ3：TCPになってみよう（並べ直し＋再送要求） ---- */
+  function initTcp() {
+    const pool = $('#tcp-pool'), slotsWrap = $('#tcp-slots');
+    const resendBtn = $('#tcp-resend'), checkBtn = $('#tcp-check'), resetBtn = $('#tcp-reset'), fb = $('#tcp-feedback');
+    const N = PACKET_CHUNKS.length;
+    const slots = [];
+    for (let i = 0; i < N; i++) {
+      const s = el('div', 'slot', '<div class="slot-label"><b>' + (i + 1) + '番目</b></div><div class="slot-body"></div>');
+      slotsWrap.appendChild(s);
+      slots.push(s);
+    }
+    let missing = 0, resent = false, solved = false;
+
+    const newChip = i => {
+      const c = makeChip('番号' + (i + 1) + '｜' + PACKET_CHUNKS[i], { n: i + 1 });
+      c.classList.add('pkc', 'pk' + (i + 1));
+      return c;
+    };
+    const placer = createPlacer(pool, slots, () => {
+      if (solved) return;
+      slots.forEach(s => s.classList.remove('ok', 'ng'));
+      checkBtn.disabled = !slots.every(s => $('.chip', s));
+      if (!resent && !$('.chip', pool)) {
+        fb.className = 'feedback info';
+        fb.textContent = '並べ終わりましたが、' + (missing + 1) + '番の場所が空です。届いていないパケットは、TCPが再送を要求します。';
+      } else {
+        fb.className = 'feedback'; fb.textContent = '';
+      }
+    });
+
+    function load() {
+      solved = false; resent = false;
+      missing = 1 + Math.floor(Math.random() * (N - 2)); // 2〜N-1番のどれかが届かない
+      placer.clearSelection();
+      slots.forEach(s => { s.classList.remove('ok', 'ng'); $('.slot-body', s).innerHTML = ''; });
+      pool.innerHTML = '';
+      const ids = shuffle(Array.from({ length: N }, (_, i) => i).filter(i => i !== missing));
+      ids.forEach(i => placer.add(newChip(i)));
+      resendBtn.disabled = false; checkBtn.disabled = true; resetBtn.disabled = false;
+      fb.className = 'feedback info';
+      fb.textContent = 'サーバーに届いたパケットは ' + (N - 1) + ' 個です（全部で ' + N + ' 個のはず…）。';
+    }
+
+    resendBtn.addEventListener('click', () => {
+      if (resent || solved) return;
+      resent = true;
+      const c = newChip(missing);
+      c.classList.add('resent');
+      placer.add(c);
+      resendBtn.disabled = true;
+      fb.className = 'feedback ok';
+      fb.textContent = 'TCPが、届いていない ' + (missing + 1) + '番のパケットの再送を要求し、届きました！ 番号の場所に並べよう。';
+    });
+
+    checkBtn.addEventListener('click', () => {
+      const results = slots.map((s, i) => { const c = $('.chip', s); return !!c && Number(c.dataset.n) === i + 1; });
+      slots.forEach((s, i) => s.classList.add(results[i] ? 'ok' : 'ng'));
+      if (results.every(Boolean)) {
+        solved = true;
+        $$('.chip', slotsWrap).forEach(c => c.classList.add('locked'));
+        checkBtn.disabled = true; resendBtn.disabled = true;
+        fb.className = 'feedback ok';
+        fb.innerHTML = '正解！ 元のメッセージに戻りました：「' + esc(PACKET_CHUNKS.join('')) + '」<br>TCPは、番号で並べ直し、届かなかったパケットは再送を要求します。';
+        part(3, 'tcp');
+      } else {
+        fb.className = 'feedback ng';
+        fb.textContent = '赤い場所は、番号が合っていません。パケットの番号と、場所の番号を見比べて置き直そう。';
+      }
+    });
+    resetBtn.addEventListener('click', load);
+    load();
+  }
+
+  /* ---- ステップ4：リクエストを自分で組み立てよう ---- */
+  function initReq() {
+    const pool = $('#rq-pool'), build = $('#rq-build');
+    const slots = $$('.slot', build);
+    const taskEl = $('#rq-task'), numEl = $('#rq-num'), fb = $('#rq-feedback'), out = $('#rq-out');
+    const checkBtn = $('#rq-check'), resetBtn = $('#rq-reset'), nextBtn = $('#rq-next');
+    let idx = 0, locked = false;
+
+    const placer = createPlacer(pool, slots, () => {
+      if (locked) return;
+      slots.forEach(s => s.classList.remove('ok', 'ng'));
+      $$('.chip', $('#view-4')).forEach(c => c.classList.remove('ok', 'ng', 'r-method', 'r-path', 'r-host'));
+      fb.className = 'feedback'; fb.textContent = '';
+      checkBtn.disabled = !slots.every(s => $('.chip', s));
+    });
+
+    function load(i) {
+      idx = i; locked = false;
+      placer.clearSelection();
+      slots.forEach(s => { s.classList.remove('ok', 'ng'); $('.slot-body', s).innerHTML = ''; });
+      pool.innerHTML = '';
+      const t = REQ_TASKS[i];
+      taskEl.innerHTML = 'ブラウザは今、<b>' + esc(t.host) + '</b> のサーバーにある <b>' + esc(t.path) + '</b> がほしいところです。部品を正しい場所に置いて、HTTPリクエストを完成させよう。';
+      numEl.textContent = i + 1;
+      const items = [
+        { role: 'method', text: 'GET' }, { role: 'path', text: t.path }, { role: 'host', text: t.host },
+        { role: 'x', text: '200 OK' }, { role: 'x', text: 'https://' }
+      ];
+      shuffle(items).forEach(it => placer.add(makeChip(it.text, { role: it.role })));
+      fb.className = 'feedback'; fb.textContent = '';
+      out.hidden = true;
+      checkBtn.hidden = false; checkBtn.disabled = true; resetBtn.hidden = false; nextBtn.hidden = true;
+    }
+
+    checkBtn.addEventListener('click', () => {
+      const results = slots.map(s => {
+        const c = $('.chip', s);
+        const good = !!c && c.dataset.role === s.dataset.role;
+        s.classList.add(good ? 'ok' : 'ng');
+        if (c) { c.classList.add(good ? 'ok' : 'ng'); if (good) c.classList.add('r-' + s.dataset.role); }
+        return good;
+      });
+      if (results.every(Boolean)) {
+        locked = true;
+        const t = REQ_TASKS[idx];
+        $$('.chip', build).forEach(c => c.classList.add('locked'));
+        fb.className = 'feedback ok';
+        fb.textContent = '正解！ リクエストが完成しました。';
+        out.hidden = false;
+        out.innerHTML = '<span class="c-key">GET</span> <span class="c-path">' + esc(t.path) + '</span> HTTP/1.1\n<span class="c-key">Host:</span> <span class="c-host">' + esc(t.host) + '</span>';
+        checkBtn.hidden = true; resetBtn.hidden = true;
+        if (idx < REQ_TASKS.length - 1) nextBtn.hidden = false; else part(4, 'req');
+      } else {
+        fb.className = 'feedback ng';
+        fb.textContent = '赤い場所は、部品がちがいます。「何をしたいか」「どのファイルか」「どのサイトか」を考えて置き直そう。';
+      }
+    });
+    resetBtn.addEventListener('click', () => load(idx));
+    nextBtn.addEventListener('click', () => load(idx + 1));
+    load(0);
+  }
+
   /* =========================================================
      ステップ5：レンダリングの順番パズル
      ========================================================= */
@@ -1011,9 +1229,11 @@
     initStep3();
     initStep4();
     initStep5();
-    mountQuiz($('#quiz-dns'), QUIZ.dns, () => part(2, 'quiz'));
-    mountQuiz($('#quiz-packet'), QUIZ.packet, () => part(3, 'quiz'));
-    mountQuiz($('#quiz-http'), QUIZ.http, () => part(4, 'quiz'));
+    mountLookup($('#lk-dns'), LOOKUP.dns, () => part(2, 'role'));
+    mountLookup($('#lk-router'), LOOKUP.router, () => part(3, 'router'));
+    initTcp();
+    initReq();
+    mountLookup($('#lk-http'), LOOKUP.http, () => part(4, 'server'));
 
     updateProgressUI();
     const start = (location.hash || '').replace('#', '');
