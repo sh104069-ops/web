@@ -1,1 +1,409 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16233f">
+<meta name="description" content="高校「情報Ⅰ」情報通信ネットワーク：URLを入力してからWEBページが表示されるまでを、パズルとシミュレーションで体験して学ぶ学習アプリ">
+<title>WEBページが開くまで ─ 情報Ⅰ 情報通信ネットワーク</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+<div class="loadbar" aria-hidden="true"><div class="loadbar-fill" id="loadbar"></div></div>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <div class="brand">
+      <span class="brand-tag">情報Ⅰ</span>
+      <div>
+        <h1 class="brand-title">WEBページが開くまで</h1>
+        <p class="brand-sub">情報通信ネットワークを体験して学ぼう</p>
+      </div>
+    </div>
+
+    <div class="addressbar" id="addr" data-focus="proto domain path" aria-live="polite">
+      <span class="ab-lock" aria-hidden="true">🔒</span>
+      <span class="ab-url" aria-label="URLの例 https://example.com/index.html"><span class="u-proto">https://</span><span class="u-domain">example.com</span><span class="u-path">/index.html</span></span>
+      <span class="ab-status"><i class="ab-spin" aria-hidden="true"></i><span id="statusText">待機中</span></span>
+    </div>
+
+    <nav class="stepper" id="stepper" aria-label="学習ステップ">
+      <button type="button" class="st" data-go="home"><span class="st-dot">⌂</span><span class="st-label">はじめに</span></button>
+      <button type="button" class="st" data-go="1"><span class="st-dot">1</span><span class="st-label">URL</span></button>
+      <button type="button" class="st" data-go="2"><span class="st-dot">2</span><span class="st-label">DNS</span></button>
+      <button type="button" class="st" data-go="3"><span class="st-dot">3</span><span class="st-label">パケット</span></button>
+      <button type="button" class="st" data-go="4"><span class="st-dot">4</span><span class="st-label">HTTP</span></button>
+      <button type="button" class="st" data-go="5"><span class="st-dot">5</span><span class="st-label">描画</span></button>
+    </nav>
+  </div>
+</header>
+
+<noscript><p class="noscript">このアプリはJavaScriptを使います。ブラウザのJavaScriptを有効にしてください。</p></noscript>
+
+<main class="wrap">
+
+  <!-- ==================== はじめに／まとめ ==================== -->
+  <section class="view active" id="view-home" aria-labelledby="h-home">
+    <div class="hero">
+      <h2 id="h-home">URLを入力して Enter を押すと、<br>ページが表示されるまでに何が起きている？</h2>
+      <p class="hero-url" aria-hidden="true"><span class="u-proto">https://</span><span class="u-domain">example.com</span><span class="u-path">/index.html</span></p>
+      <p class="hero-text">ほんの数秒のあいだに、ブラウザとネットワークは5つの手順を進めています。パズルやシミュレーションを操作しながら、ひとつずつ確かめていこう。</p>
+      <button type="button" class="btn primary big" data-go="1">ステップ1からはじめる</button>
+    </div>
+
+    <ol class="journey" id="journey"></ol>
+
+    <p class="complete-msg" id="complete-msg" hidden>5つのステップをすべてクリアしました。URLを入力してからページが表示されるまでの流れを、自分の言葉で説明してみよう。</p>
+  </section>
+
+  <!-- ==================== ステップ1 ==================== -->
+  <section class="view" id="view-1" aria-labelledby="h-1">
+    <div class="view-head">
+      <span class="view-num" aria-hidden="true">1</span>
+      <div>
+        <h2 id="h-1">URLの入力と解析</h2>
+        <p class="lead">入力された住所（URL）を、3つの要素に分解する。</p>
+      </div>
+    </div>
+    <p class="mission"><b>ミッション</b>URLのパーツを、役割ごとの場所に運んで分解しよう。</p>
+
+    <div class="panel">
+      <h3>URLは3つの要素でできている</h3>
+      <p class="url-demo" aria-label="入力されたURL https://example.com/index.html"><span class="u-proto">https://</span><span class="u-domain">example.com</span><span class="u-path">/index.html</span></p>
+      <dl class="deflist roles">
+        <dt class="r-proto">プロトコル<code>https</code></dt>
+        <dd>通信の約束事。WEBサーバーとデータを送受信するためのルール。<code>https</code> は通信を暗号化して、安全にやり取りする。</dd>
+        <dt class="r-domain">ドメイン名<code>example.com</code></dt>
+        <dd>WEBサイトの名称・住所。インターネット上のサーバーを、人間が識別しやすくした名前。</dd>
+        <dt class="r-path">パス名<code>/index.html</code></dt>
+        <dd>ファイルの位置。サーバーの中にある、具体的なファイルやデータの格納場所を示す。</dd>
+      </dl>
+    </div>
+
+    <div class="panel">
+      <div class="panel-top">
+        <h3>体験：URLをパズルで分解しよう</h3>
+        <div class="puzzle-meta"><span>問題 <b id="p1-num">1</b> / 5</span><span class="dots" id="p1-dots" aria-hidden="true"></span></div>
+      </div>
+      <p class="instr">パーツをタップして選び、置きたい場所をタップ。ドラッグで運んでもOK。全部置いたら「こたえあわせ」。</p>
+
+      <div class="pool" id="p1-pool" aria-label="パーツ置き場"></div>
+
+      <div class="slots" id="p1-slots">
+        <div class="slot r-proto" data-role="proto">
+          <div class="slot-label"><b>プロトコル</b><span class="slot-hint">通信の約束事</span></div>
+          <div class="slot-body"></div>
+        </div>
+        <div class="slot r-domain" data-role="domain">
+          <div class="slot-label"><b>ドメイン名</b><span class="slot-hint">サイトの名前・住所</span></div>
+          <div class="slot-body"></div>
+        </div>
+        <div class="slot r-path" data-role="path">
+          <div class="slot-label"><b>パス名</b><span class="slot-hint">ファイルの位置</span></div>
+          <div class="slot-body"></div>
+        </div>
+      </div>
+
+      <div class="feedback" id="p1-feedback" role="status"></div>
+      <p class="p-note" id="p1-note" hidden></p>
+
+      <div class="actions">
+        <button type="button" class="btn primary" id="p1-check" disabled>こたえあわせ</button>
+        <button type="button" class="btn ghost" id="p1-reset">やり直す</button>
+        <button type="button" class="btn primary" id="p1-next" hidden>次の問題へ</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>やってみよう：好きなURLを分解する</h3>
+      <p class="instr">URLを入力すると、3つの要素に自動で分けます。</p>
+      <div class="az-row">
+        <input type="text" id="az-input" class="az-input" value="https://example.com/index.html" spellcheck="false" autocomplete="off" autocapitalize="off" inputmode="url" aria-label="分解するURL">
+      </div>
+      <div class="az-examples">
+        <button type="button" class="pick" data-example="https://example.com/index.html">例1</button>
+        <button type="button" class="pick" data-example="http://www.example.ac.jp/club/kendo.html">例2</button>
+        <button type="button" class="pick" data-example="https://info.example.jp">例3（パス名なし）</button>
+        <button type="button" class="pick" data-example="example.com/index.html">例4（プロトコルなし）</button>
+      </div>
+      <div class="az-out" id="az-out" aria-live="polite"></div>
+    </div>
+
+    <div class="done-banner" id="done-1" hidden><span>ステップ1 クリア！</span><button type="button" class="btn primary" data-go="2">ステップ2へ</button></div>
+    <div class="pager"><button type="button" class="btn ghost" data-go="home">はじめにもどる</button><button type="button" class="btn ghost" data-go="2">次へ</button></div>
+  </section>
+
+  <!-- ==================== ステップ2 ==================== -->
+  <section class="view" id="view-2" aria-labelledby="h-2">
+    <div class="view-head">
+      <span class="view-num" aria-hidden="true">2</span>
+      <div>
+        <h2 id="h-2">DNSによる「名前解決」</h2>
+        <p class="lead">ドメイン名をIPアドレスへ変換する。</p>
+      </div>
+    </div>
+    <p class="mission"><b>ミッション</b>ドメイン名をIPアドレスに変換する「名前解決」を、①→②→③の順に実行しよう。</p>
+
+    <div class="panel">
+      <h3>なぜ変換が必要なの？</h3>
+      <p>通信には「<code>192.0.2.1</code>」のような数字のIPアドレスが必要ですが、人間には覚えづらいため、「<code>example.com</code>」のようなドメイン名を使います。このドメイン名をIPアドレスへ変換するシステムが <b>DNS（Domain Name System）</b> です。</p>
+      <p class="convert" aria-hidden="true"><span class="cv-a">example.com</span><span class="cv-mid">DNSで名前解決</span><span class="cv-b">192.0.2.1</span></p>
+      <ol class="flow3">
+        <li><b>① 問い合わせ</b><span>PCがDNSサーバーに「このドメイン名のIPアドレスは？」とたずねる。</span></li>
+        <li><b>② 検索・参照</b><span>DNSサーバーが、ドメイン名とIPアドレスの対応表（台帳）を調べる。</span></li>
+        <li><b>③ 応答（名前解決）</b><span>見つかったIPアドレスをPCに返す。</span></li>
+      </ol>
+    </div>
+
+    <div class="panel">
+      <h3>体験：名前解決を実行しよう</h3>
+      <p class="instr">調べたいドメイン名を選んで、ボタンを①→②→③の順に押します。1つだけ、台帳にないドメイン名が混じっています。</p>
+      <div class="pick-row" id="dns-domains"></div>
+
+      <div class="stage" aria-hidden="false">
+        <div class="node">
+          <div class="node-icon">💻</div>
+          <b>あなたのPC</b>
+          <small>ブラウザ</small>
+          <div class="node-note" id="dns-pc-note">IPアドレス：？</div>
+        </div>
+        <div class="wire"><span class="env" id="dns-env">✉️</span></div>
+        <div class="node">
+          <div class="node-icon">🗄️</div>
+          <b>DNSサーバー</b>
+          <small>ドメイン名とIPアドレスの台帳</small>
+        </div>
+      </div>
+
+      <div class="stage-msg" id="dns-msg" role="status">ドメイン名を選んでください。</div>
+
+      <div class="table-wrap">
+        <table class="dns-table" id="dns-table">
+          <thead><tr><th>ドメイン名</th><th>IPアドレス</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn primary" id="dns-b1" disabled>① 問い合わせ</button>
+        <button type="button" class="btn primary" id="dns-b2" disabled>② 検索・参照</button>
+        <button type="button" class="btn primary" id="dns-b3" disabled>③ 応答（名前解決）</button>
+        <button type="button" class="btn ghost" id="dns-reset">やり直す</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>確認クイズ</h3>
+      <div class="quiz" id="quiz-dns"></div>
+    </div>
+
+    <div class="done-banner" id="done-2" hidden><span>ステップ2 クリア！</span><button type="button" class="btn primary" data-go="3">ステップ3へ</button></div>
+    <div class="pager"><button type="button" class="btn ghost" data-go="1">前へ</button><button type="button" class="btn ghost" data-go="3">次へ</button></div>
+  </section>
+
+  <!-- ==================== ステップ3 ==================== -->
+  <section class="view" id="view-3" aria-labelledby="h-3">
+    <div class="view-head">
+      <span class="view-num" aria-hidden="true">3</span>
+      <div>
+        <h2 id="h-3">WEBサーバーへの接続とパケット通信</h2>
+        <p class="lead">TCP/IPとルーターで、データをサーバーまで運ぶ。</p>
+      </div>
+    </div>
+    <p class="mission"><b>ミッション</b>データをパケットに分けて送り、サーバーで元通りにしよう。ルーターを故障させても届くかな？</p>
+
+    <div class="panel">
+      <h3>ポイント</h3>
+      <dl class="deflist">
+        <dt>パケット交換方式</dt>
+        <dd>データを小さな「パケット」に分割し、宛先（IPアドレス）や番号を付けて送る。1本の回線を、たくさんの通信で分け合って使える。</dd>
+        <dt>ルーティング</dt>
+        <dd>ルーターがパケットの宛先を見て、次に送る先（経路）を選んで転送する。混んでいる道や故障した道は避けられる。</dd>
+        <dt>TCP／IP</dt>
+        <dd><b>IP</b>は宛先のIPアドレスまでパケットを届ける（住所の役割）。<b>TCP</b>はパケットを番号順に並べ直し、届かなかったものは再送を求める（確実に届ける役割）。</dd>
+      </dl>
+    </div>
+
+    <div class="panel">
+      <h3>体験：パケットを送ろう</h3>
+      <p class="instr">送りたいメッセージが、6つのパケットに分割されました。「送信する」を押すと、パケットがルーターを通ってサーバーへ向かいます。<b>ルーターをタップ</b>すると故障（✕）にできます。</p>
+
+      <p class="mini-title">送信するパケット（宛先はステップ2で調べたIPアドレス）</p>
+      <div class="pcards" id="pk-cards"></div>
+
+      <svg class="net" id="net" viewBox="0 0 680 300" role="img" aria-label="ネットワーク図。PCとWEBサーバーのあいだに7台のルーターがあり、複数の経路がある。"></svg>
+
+      <div class="stage-msg" id="pk-msg" role="status">「送信する」を押してください。</div>
+
+      <div class="actions">
+        <button type="button" class="btn primary" id="pk-send">送信する</button>
+        <button type="button" class="btn ghost" id="pk-reset">やり直す</button>
+      </div>
+
+      <p class="mini-title">WEBサーバーが受け取ったパケット（番号の場所に入る）</p>
+      <div class="recv" id="pk-recv"></div>
+      <p class="pk-log" id="pk-log" aria-live="polite"></p>
+    </div>
+
+    <div class="panel">
+      <h3>確認クイズ</h3>
+      <div class="quiz" id="quiz-packet"></div>
+    </div>
+
+    <div class="done-banner" id="done-3" hidden><span>ステップ3 クリア！</span><button type="button" class="btn primary" data-go="4">ステップ4へ</button></div>
+    <div class="pager"><button type="button" class="btn ghost" data-go="2">前へ</button><button type="button" class="btn ghost" data-go="4">次へ</button></div>
+  </section>
+
+  <!-- ==================== ステップ4 ==================== -->
+  <section class="view" id="view-4" aria-labelledby="h-4">
+    <div class="view-head">
+      <span class="view-num" aria-hidden="true">4</span>
+      <div>
+        <h2 id="h-4">HTTPリクエストとレスポンス</h2>
+        <p class="lead">クライアント・サーバーモデル。</p>
+      </div>
+    </div>
+    <p class="mission"><b>ミッション</b>リクエストを送って、サーバーから返ってくるレスポンスを確かめよう。</p>
+
+    <div class="panel">
+      <h3>ポイント</h3>
+      <dl class="deflist">
+        <dt>クライアント</dt>
+        <dd>サービスを要求する側。WEBブラウザがあたる。</dd>
+        <dt>サーバー</dt>
+        <dd>要求に応じて、データやサービスを提供する側。WEBサーバーがあたる。</dd>
+        <dt>HTTPリクエスト</dt>
+        <dd>クライアントからサーバーへの<b>要求</b>。「このファイルをください」とお願いする。</dd>
+        <dt>HTTPレスポンス</dt>
+        <dd>サーバーからクライアントへの<b>応答</b>。結果（ステータス）と、HTMLなどのデータを返す。</dd>
+      </dl>
+    </div>
+
+    <div class="panel">
+      <h3>体験：リクエストを送ろう</h3>
+      <p class="instr">ほしいファイルのパス名を選んで「リクエストを送る」を押します。ステップ1で学んだ<b>パス名</b>が、ここで使われます。</p>
+      <div class="pick-row" id="http-paths"></div>
+
+      <div class="stage">
+        <div class="node">
+          <div class="node-icon">💻</div>
+          <b>クライアント</b>
+          <small>WEBブラウザ</small>
+        </div>
+        <div class="wire"><span class="env" id="http-env">✉️</span></div>
+        <div class="node">
+          <div class="node-icon">🖥️</div>
+          <b>WEBサーバー</b>
+          <small>example.com</small>
+        </div>
+      </div>
+
+      <div class="stage-msg" id="http-msg" role="status">パス名を選んでください。</div>
+
+      <div class="msgs">
+        <div class="msgbox">
+          <p class="msg-title req">HTTPリクエスト（要求）</p>
+          <pre class="code" id="http-req">（まだ作られていません）</pre>
+        </div>
+        <div class="msgbox">
+          <p class="msg-title res">HTTPレスポンス（応答）</p>
+          <pre class="code" id="http-res">（まだ届いていません）</pre>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn primary" id="http-send" disabled>リクエストを送る</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>確認クイズ</h3>
+      <div class="quiz" id="quiz-http"></div>
+    </div>
+
+    <div class="done-banner" id="done-4" hidden><span>ステップ4 クリア！</span><button type="button" class="btn primary" data-go="5">ステップ5へ</button></div>
+    <div class="pager"><button type="button" class="btn ghost" data-go="3">前へ</button><button type="button" class="btn ghost" data-go="5">次へ</button></div>
+  </section>
+
+  <!-- ==================== ステップ5 ==================== -->
+  <section class="view" id="view-5" aria-labelledby="h-5">
+    <div class="view-head">
+      <span class="view-num" aria-hidden="true">5</span>
+      <div>
+        <h2 id="h-5">ブラウザによるレンダリング</h2>
+        <p class="lead">受け取ったHTMLを、画面に描き出す。</p>
+      </div>
+    </div>
+    <p class="mission"><b>ミッション</b>4つの処理を正しい順番に並べて、画面に出力しよう。順番がちがうと、何も表示されません。</p>
+
+    <div class="panel">
+      <h3>体験：レンダリングの順番を並べよう</h3>
+      <p class="instr">下のカードを、ブラウザが処理する順番に、1番目から4番目の場所へ運びます（タップ／ドラッグ）。並べ終わったら「ブラウザで表示する」。</p>
+
+      <div class="pool pool-col" id="rd-pool" aria-label="処理カード置き場"></div>
+
+      <div class="slots order-slots" id="rd-slots">
+        <div class="slot" data-pos="0"><div class="slot-label"><b>1番目</b></div><div class="slot-body"></div></div>
+        <div class="slot" data-pos="1"><div class="slot-label"><b>2番目</b></div><div class="slot-body"></div></div>
+        <div class="slot" data-pos="2"><div class="slot-label"><b>3番目</b></div><div class="slot-body"></div></div>
+        <div class="slot" data-pos="3"><div class="slot-label"><b>4番目</b></div><div class="slot-body"></div></div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn primary" id="rd-run" disabled>ブラウザで表示する</button>
+        <button type="button" class="btn ghost" id="rd-reset">並べ直す</button>
+      </div>
+      <div class="feedback" id="rd-feedback" role="status"></div>
+    </div>
+
+    <div class="panel">
+      <h3>ブラウザの中を見てみよう</h3>
+      <div class="render-grid">
+        <div>
+          <p class="mini-title">ブラウザの内部の処理</p>
+          <ol class="rstages" id="rd-stages">
+            <li class="rstage"><div class="rs-head"><span class="rs-no">1</span><b>？</b></div><pre class="rs-out">（待機中）</pre></li>
+            <li class="rstage"><div class="rs-head"><span class="rs-no">2</span><b>？</b></div><pre class="rs-out">（待機中）</pre></li>
+            <li class="rstage"><div class="rs-head"><span class="rs-no">3</span><b>？</b></div><pre class="rs-out">（待機中）</pre></li>
+            <li class="rstage"><div class="rs-head"><span class="rs-no">4</span><b>？</b></div><pre class="rs-out">（待機中）</pre></li>
+          </ol>
+        </div>
+        <div>
+          <p class="mini-title">ディスプレイに表示される画面</p>
+          <div class="browser">
+            <div class="browser-bar"><i></i><i></i><i></i><span class="browser-url">https://example.com/index.html</span></div>
+            <div class="screen blank" id="rd-screen">
+              <div class="page" id="rd-page">
+                <h3 class="pg-title">ようこそ！</h3>
+                <p>これはWEBページの見本です。</p>
+                <div class="pg-hero" aria-hidden="true"></div>
+                <p>読み込み時刻：<span id="pg-time">--:--:--</span></p>
+                <button type="button" class="pg-btn" id="pg-btn" disabled>いいね！ <span id="pg-count">0</span></button>
+              </div>
+              <div class="pixels" id="rd-pixels" aria-hidden="true"></div>
+              <p class="blank-msg" id="rd-blank">まだ何も表示されません</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="actions"><button type="button" class="btn ghost" id="rd-replay" hidden>もう一度見る</button></div>
+    </div>
+
+    <div class="done-banner" id="done-5" hidden><span>ステップ5 クリア！</span><button type="button" class="btn primary" data-go="home">全体のまとめを見る</button></div>
+    <div class="pager"><button type="button" class="btn ghost" data-go="4">前へ</button><button type="button" class="btn ghost" data-go="home">はじめにもどる</button></div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p>高校「情報Ⅰ」情報通信ネットワーク ─ WEBページが開かれるまで</p>
+  <p>学習の進み具合は、この端末のブラウザにだけ保存されます。</p>
+  <button type="button" class="link-btn" id="reset-progress">進み具合をリセットする</button>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="script.js"></script>
+</body>
+</html>
